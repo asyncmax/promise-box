@@ -1,21 +1,33 @@
 var fetch = require("node-fetch");
-var forEach = require("promise-box/lib/forEach");
+var queue = require("promise-box/lib/queue");
 
-forEach([
-  "http://www.google.com/",
-  "http://www.yahoo.com/",
-  "http://www.facebook.com/"
-], url => {
+var tasks = queue({
+  data: [
+    "http://www.google.com/",
+    "http://www.yahoo.com/",
+    "http://www.facebook.com/",
+    "http://www.github.com/"
+  ],
+  concurrency: 2
+});
+
+tasks.run(url => {
+  console.log("Fetching:", url);
   return fetch(url).then(res => {
-    console.log(url, res.status, res.statusText);
+    console.log("Done:", url, res.status, res.statusText);
   });
 }).then(() => {
-  console.log("done!");
+  console.log("All finished!");
 });
 
 /****** console output *******
- http://www.google.com/ 200 OK
- http://www.yahoo.com/ 200 OK
- http://www.facebook.com/ 200 OK
- done!
+ Fetching: http://www.google.com/
+ Fetching: http://www.yahoo.com/
+ Done: http://www.google.com/ 200 OK
+ Fetching: http://www.facebook.com/
+ Done: http://www.yahoo.com/ 200 OK
+ Fetching: http://www.github.com/
+ Done: http://www.github.com/ 200 OK
+ Done: http://www.facebook.com/ 200 OK
+ All finished!
 ******************************/

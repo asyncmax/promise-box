@@ -4,37 +4,51 @@ A collection of essential Promise utilities
 
 # Basic usage
 
-> Fetches data from HTTP servers in series (no concurrent transactions).
+> Fetches data from HTTP servers limiting maximum concurrency level to 2.
 
 ```js
 var fetch = require("node-fetch");
-var forEach = require("promise-box/lib/forEach");
+var queue = require("promise-box/lib/queue");
 
-forEach([
-  "http://www.google.com/",
-  "http://www.yahoo.com/",
-  "http://www.facebook.com/"
-], url => {
+var tasks = queue({
+  data: [
+    "http://www.google.com/",
+    "http://www.yahoo.com/",
+    "http://www.facebook.com/",
+    "http://www.github.com/"
+  ],
+  concurrency: 2
+});
+
+tasks.run(url => {
+  console.log("Fetching:", url);
   return fetch(url).then(res => {
-    console.log(url, res.status, res.statusText);
+    console.log("Done:", url, res.status, res.statusText);
   });
 }).then(() => {
-  console.log("done!");
+  console.log("All finished!");
 });
 
 /****** console output *******
- http://www.google.com/ 200 OK
- http://www.yahoo.com/ 200 OK
- http://www.facebook.com/ 200 OK
- done!
+ Fetching: http://www.google.com/
+ Fetching: http://www.yahoo.com/
+ Done: http://www.google.com/ 200 OK
+ Fetching: http://www.facebook.com/
+ Done: http://www.yahoo.com/ 200 OK
+ Fetching: http://www.github.com/
+ Done: http://www.github.com/ 200 OK
+ Done: http://www.facebook.com/ 200 OK
+ All finished!
 ******************************/
 ```
 
 # Why?
 
+You will encounter many repetitive coding patterns when using Promises. Writing your own solution for every and each case is time consuming and error-prone.
+
 # How to link
 
-> Recommended way to reduce footprint, especially on browser environment.
+> Recommended way to reduce footprint, especially for browser environment.
 
 ```js
 var forEach = require("promise-box/lib/forEach");
@@ -42,11 +56,13 @@ var forEach = require("promise-box/lib/forEach");
 forEach(...);
 ```
 
-> If you really want a classic style.
+> If you really want the classic style. Note that, by using this pattern, you will include the entire code base regardless of actual functions you use.
 
+```js
 var pbox = require("promise-box");
 
 pbox.forEach(...);
+```
 
 # API
 

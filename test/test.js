@@ -231,3 +231,46 @@ test("queue: put & end", function(t) {
   t.equal(invoked, 4);
   t.equal(resolved, 0);
 });
+
+test("wrap: basic", function(t) {
+  pbox.wrap(function() {
+    return "ok";
+  }).then(function(res) {
+    t.equal(res, "ok");
+  }).then(t.end, t.end);
+});
+
+test("wrap: error", function(t) {
+  pbox.wrap(function() {
+    throw Error("TEST");
+  }).then(function() {
+    t.fail("should not get here");
+  }).catch(function(err) {
+    t.equal(err.message, "TEST");
+  }).then(t.end, t.end);
+});
+
+function api(arg, callback) {
+  setImmediate(function() {
+    if (arg)
+      callback(null, arg + "-ok");
+    else
+      callback(Error("TEST"));
+  });
+}
+
+test("promisify: basic", function(t) {
+  var papi = pbox.promisify(api);
+  papi("input").then(function(res) {
+    t.equal(res, "input-ok");
+  }).then(t.end, t.end);
+});
+
+test("promisify: error", function(t) {
+  var papi = pbox.promisify(api);
+  papi(null).then(function() {
+    t.fail("should not get here");
+  }).catch(function(err) {
+    t.equal(err.message, "TEST");
+  }).then(t.end, t.end);
+});

@@ -274,3 +274,21 @@ test("promisify: error", function(t) {
     t.equal(err.message, "TEST");
   }).then(t.end, t.end);
 });
+
+test("timeout: basic", function(t) {
+  pbox.timeout(Promise.resolve(), 1000).then(function() {
+    t.pass("already resolved promise");
+  }).catch(function() {
+    t.fail("should not get here");
+  }).then(t.end, t.end);
+});
+
+test("timeout: error", function(t) {
+  pbox.timeout(new Promise(function(resolve) {
+    setTimeout(resolve, 500);
+  }), 1).then(function() {
+    t.fail("should not get here");
+  }).catch(function(err) {
+    t.equal(err.code, "TIMEOUT_ERROR");
+  }).then(t.end, t.end);
+});

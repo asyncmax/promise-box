@@ -107,7 +107,7 @@ Creates a queue to coordinate execution of asynchronous tasks.
 
 - concurrency: Maximum concurrency level. Default is 32.
 - data: Array of items for the handler. You can also add items using `put` method after the queue is created. If this is specified, `autoEnd` is set to true. Default is null.
-- autoEnd: If true, the promise returned by `run` method will be resolved automatically if the queue becomes empty. If false, the promise will be resolved only when both you call `end` method and the queue becomes empty.
+- autoEnd: If true, the promise returned by `run` method will be resolved automatically if the queue becomes empty. If false, the promise will be resolved only when both you call `end` method and the queue becomes empty. Default is false if `data` is not specified, true if specified.
 
 #### Returned Object
 
@@ -119,7 +119,7 @@ Creates a queue to coordinate execution of asynchronous tasks.
 
 ### promisify(func, thisObj)
 
-Promisifies a callback based function. `const readFileP = promisify(fs.readFile, fs)`.
+Promisifies a callback based function. e.g. `const readFileP = promisify(fs.readFile, fs)`.
 
 ### wrap(func)
 
@@ -127,7 +127,7 @@ Wraps a function with a try-catch block and returns a promise to be resolved wit
 
 ### timeout(promise, ms)
 
-Returns a promise wrapping another promise to limit the duration of operation with a timeout. If the inner promise is resolved within the timeout, the returned promise will be also resolved with the same value. If a timeout occurs before the inner promise is resolved, the returned promise will be rejected with an timeout exception. The inner promise's status change will be ignored after the timeout.
+Returns a promise wrapping another promise to limit the execution time of operation with a timeout. If the inner promise is resolved within the timeout, the returned promise will be also resolved with the same value. If a timeout occurs before the inner promise is resolved, the returned promise will be rejected with an timeout exception. The inner promise's status change will be ignored after the timeout.
 
 ### delay(ms, value)
 

@@ -101,7 +101,37 @@ Returns a promise that is resolved with `true` if the loop iterated all items in
 
 ### queue(options)
 
-Creates a queue to coordinate execution of asynchronous tasks based using Promise.
+Creates a queue to coordinate execution of asynchronous tasks.
+
+#### Options
+
+- concurrency: Maximum concurrency level. Default is 32.
+- data: Array of items for the handler. You can also add items using `put` method after the queue is created. If this is specified, `autoEnd` is set to true. Default is null.
+- autoEnd: If true, the promise returned by `run` method will be resolved automatically if the queue becomes empty. If false, the promise will be resolved only when both you call `end` method and the queue becomes empty.
+
+#### Returned Object
+
+- run(handler): Starts processing of enqueued items. Returns a promise to be resolved when all items are processed. The handler is called with an item as only argument. If the handler returns a promise, the task is considered done when the promise is resolved.
+
+- put(item): Adds an item to the queue.
+
+- end(): Indicates the end of queue. After you call this method, the promise returned by `run` method will be resolved automatically as soon as the queue becomes empty.
+
+### promisify(func, thisObj)
+
+Promisifies a callback based function. `const readFileP = promisify(fs.readFile, fs)`.
+
+### wrap(func)
+
+Wraps a function with a try-catch block and returns a promise to be resolved with the return value of the function. If the function throws an exception, the returned promise will be rejected with the exception object.
+
+### timeout(promise, ms)
+
+Returns a promise wrapping another promise to limit the duration of operation with a timeout. If the inner promise is resolved within the timeout, the returned promise will be also resolved with the same value. If a timeout occurs before the inner promise is resolved, the returned promise will be rejected with an timeout exception. The inner promise's status change will be ignored after the timeout.
+
+### delay(ms, value)
+
+Returns a promise to be resolved with the value after the specified delay.
 
 # Develop & contribute
 

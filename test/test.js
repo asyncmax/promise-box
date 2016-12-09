@@ -292,3 +292,11 @@ test("timeout: error", function(t) {
     t.equal(err.code, "TIMEOUT_ERROR");
   }).then(t.end, t.end);
 });
+
+test("delay", function(t) {
+  var start = Date.now();
+  pbox.delay(200).then(function() {
+    var end = Date.now();
+    t.ok(end - start >= 200, "should delay execution at least 200ms");
+  }).then(t.end, t.end);
+});

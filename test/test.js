@@ -141,6 +141,8 @@ test("queue: basic", function(t) {
   queue.put(3);
   queue.put(4);
 
+  t.equal(queue.count(), 4);
+
   queue.run(function(item) {
     invoked++;
     t.equal(item, invoked);
